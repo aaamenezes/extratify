@@ -1,3 +1,5 @@
+import { columns, Transaction } from '@/components/transactionsTable/columns';
+import DataTable from '@/components/transactionsTable/DataTable';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,31 +20,62 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+async function getData(): Promise<Transaction[]> {
+  return [
+    // {
+    //   description: 'Cerveja',
+    //   value: '10',
+    // },
+    // {
+    //   description: 'Cafe',
+    //   value: '20',
+    // },
+    // {
+    //   description: 'Leite',
+    //   value: '30',
+    // },
+    // {
+    //   description: 'Suco',
+    //   value: '40',
+    // },
+  ];
+}
+
 export default function Home() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    (async function () {
+      const data = await getData();
+      setTransactions(data);
+    })();
+  }, []);
+
   const addTransactionSchema = z.object({
     description: z.string().min(3, {
       message: 'Descrição muito curta',
     }),
-    price: z.string().min(1),
+    value: z.string().min(1),
   });
 
   const addTransactionForm = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       description: '',
-      price: '0',
+      value: '0',
     },
   });
 
   const handleSubmitAddTransaction = useCallback(
     (values: z.infer<typeof addTransactionSchema>) => {
-      console.log(`values:`, values);
+      setTransactions((prev) => [...prev, values]);
+      addTransactionForm.reset();
     },
-    []
+    [addTransactionForm]
   );
 
   return (
@@ -51,7 +84,7 @@ export default function Home() {
         <CardTitle>Extratify</CardTitle>
         <CardDescription>Adicionar lançamento</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col gap-12">
         <Form {...addTransactionForm}>
           <form
             onSubmit={addTransactionForm.handleSubmit(
@@ -68,23 +101,23 @@ export default function Home() {
                   <FormControl>
                     <Input placeholder="Cerveja" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Descreva o que foi a sua transação
-                  </FormDescription>
+                  <FormDescription>Descreva a sua transação</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={addTransactionForm.control}
-              name="price"
+              name="value"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Preço</FormLabel>
                   <FormControl>
                     <Input placeholder="100,00" {...field} />
                   </FormControl>
-                  <FormDescription>O valor da sua transação</FormDescription>
+                  <FormDescription>
+                    Informe o valor da sua transação
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -92,6 +125,7 @@ export default function Home() {
             <Button>Adicionar</Button>
           </form>
         </Form>
+        <DataTable columns={columns} data={transactions} />
       </CardContent>
       <CardFooter className="flex justify-between">
         <h2>footer</h2>
