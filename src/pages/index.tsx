@@ -25,24 +25,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 async function getData(): Promise<Transaction[]> {
-  return [
-    // {
-    //   description: 'Cerveja',
-    //   value: '10',
-    // },
-    // {
-    //   description: 'Cafe',
-    //   value: '20',
-    // },
-    // {
-    //   description: 'Leite',
-    //   value: '30',
-    // },
-    // {
-    //   description: 'Suco',
-    //   value: '40',
-    // },
-  ];
+  return [];
 }
 
 export default function Home() {
@@ -59,6 +42,7 @@ export default function Home() {
     description: z.string().min(3, {
       message: 'Descrição muito curta',
     }),
+    category: z.string(),
     account: z.string(),
     value: z.string().min(1),
   });
@@ -67,6 +51,7 @@ export default function Home() {
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       description: '',
+      category: '',
       account: '',
       value: '0',
     },
@@ -104,6 +89,20 @@ export default function Home() {
                     <Input placeholder="Cerveja" {...field} />
                   </FormControl>
                   <FormDescription>Descreva a sua transação</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={addTransactionForm.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Educação, saúde, etc" {...field} />
+                  </FormControl>
+                  <FormDescription>Grupo de gastos</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
