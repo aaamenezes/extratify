@@ -7,6 +7,10 @@ export interface Transaction {
 
 export const columns: ColumnDef<Transaction>[] = [
   {
+    accessorKey: 'date',
+    header: 'Data',
+  },
+  {
     accessorKey: 'description',
     header: 'Descrição',
   },

@@ -1,6 +1,7 @@
 import { columns, Transaction } from '@/components/transactionsTable/columns';
 import DataTable from '@/components/transactionsTable/DataTable';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Card,
   CardContent,
@@ -19,7 +20,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -39,6 +48,7 @@ export default function Home() {
   }, []);
 
   const addTransactionSchema = z.object({
+    date: z.date(),
     description: z.string().min(3, {
       message: 'Descrição muito curta',
     }),
@@ -50,6 +60,7 @@ export default function Home() {
   const addTransactionForm = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
+      date: new Date(),
       description: '',
       category: '',
       account: '',
@@ -79,6 +90,45 @@ export default function Home() {
             )}
             className="flex justify-between items-center"
           >
+            <FormField
+              control={addTransactionForm.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Data</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[280px] justify-start text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>Data da sua transação</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={addTransactionForm.control}
               name="description"
