@@ -59,6 +59,7 @@ export default function Home() {
     description: z.string().min(3, {
       message: 'Descrição muito curta',
     }),
+    account: z.string(),
     value: z.string().min(1),
   });
 
@@ -66,6 +67,7 @@ export default function Home() {
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       description: '',
+      account: '',
       value: '0',
     },
   });
@@ -102,6 +104,22 @@ export default function Home() {
                     <Input placeholder="Cerveja" {...field} />
                   </FormControl>
                   <FormDescription>Descreva a sua transação</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={addTransactionForm.control}
+              name="account"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Conta</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Carteira" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Em qual conta o valor foi movimentado
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
