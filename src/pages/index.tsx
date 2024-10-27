@@ -25,6 +25,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
@@ -48,6 +55,7 @@ export default function Home() {
   }, []);
 
   const addTransactionSchema = z.object({
+    type: z.string(),
     date: z.date(),
     description: z.string().min(3, {
       message: 'Descrição muito curta',
@@ -60,6 +68,7 @@ export default function Home() {
   const addTransactionForm = useForm<z.infer<typeof addTransactionSchema>>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
+      type: 'despesa',
       date: new Date(),
       description: '',
       category: '',
@@ -77,7 +86,7 @@ export default function Home() {
   );
 
   return (
-    <Card className="max-w-screen-sm mx-auto">
+    <Card className="min-w-screen-sm mx-auto">
       <CardHeader>
         <CardTitle>Extratify</CardTitle>
         <CardDescription>Adicionar lançamento</CardDescription>
@@ -90,6 +99,36 @@ export default function Home() {
             )}
             className="flex justify-between items-center"
           >
+            <FormField
+              control={addTransactionForm.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de transação</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Tipo de transação" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Despesa">Despesa</SelectItem>
+                      <SelectItem value="Receita">Receita</SelectItem>
+                      <SelectItem value="Transferência">
+                        Transferência
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Despesa, receita ou transferência entre contas
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={addTransactionForm.control}
               name="date"
