@@ -4,7 +4,6 @@ import DataTable from '@/components/transactionsTable/DataTable';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -29,10 +28,11 @@ export default function Home() {
     <Card className="min-w-screen-sm mx-auto">
       <CardHeader>
         <CardTitle>Extratify</CardTitle>
-        <CardDescription>Adicionar lançamento</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-12">
-        <AddTransactionForm setTransactions={setTransactions} />
+        <div>
+          <AddTransactionForm setTransactions={setTransactions} />
+        </div>
         <DataTable columns={columns} data={transactions} />
       </CardContent>
       <CardFooter className="flex justify-between">
