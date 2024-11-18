@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Dispatch, useCallback } from 'react';
+import { Dispatch, useCallback, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
@@ -40,6 +40,7 @@ export default function AddTransactionForm({
 }: {
   setTransactions: Dispatch<React.SetStateAction<Transaction[]>>;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const addTransactionSchema = z.object({
     type: z.string(),
     date: z.date(),
@@ -67,14 +68,15 @@ export default function AddTransactionForm({
     (values: z.infer<typeof addTransactionSchema>) => {
       setTransactions((prev) => [...prev, values]);
       addTransactionForm.reset();
+      setIsOpen(false);
     },
     [setTransactions, addTransactionForm]
   );
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Adicionar transação</Button>
+        <Button onClick={() => setIsOpen(true)}>Adicionar transação</Button>
       </DialogTrigger>
       <DialogContent className="bg-background max-h-[70vh] overflow-auto">
         <DialogHeader>
