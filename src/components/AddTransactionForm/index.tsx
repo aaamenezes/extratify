@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Dispatch, useCallback, useState } from 'react';
+import { BaseSyntheticEvent, Dispatch, useCallback, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
@@ -65,10 +65,28 @@ export default function AddTransactionForm({
   });
 
   const handleSubmitAddTransaction = useCallback(
-    (values: z.infer<typeof addTransactionSchema>) => {
+    (
+      values: z.infer<typeof addTransactionSchema>,
+      event: BaseSyntheticEvent<object, any, any> | undefined
+    ) => {
+      // adicionar a transação
       setTransactions((prev) => [...prev, values]);
       addTransactionForm.reset();
-      setIsOpen(false);
+
+      // manter o dialog aberto ou não
+      if (!(event?.nativeEvent instanceof SubmitEvent)) {
+        setIsOpen(false);
+        return;
+      }
+
+      const submitButton = event?.nativeEvent?.submitter;
+
+      if (!submitButton || !(submitButton instanceof HTMLButtonElement)) {
+        setIsOpen(false);
+        return;
+      }
+
+      setIsOpen(submitButton?.value === 'true');
     },
     [setTransactions, addTransactionForm]
   );
@@ -218,7 +236,7 @@ export default function AddTransactionForm({
               name="value"
               render={({ field }) => (
                 <FormItem className="grid grid-cols-[150px_1fr] items-center">
-                  <FormLabel>Preço</FormLabel>
+                  <FormLabel>Valor</FormLabel>
                   <FormControl>
                     <Input placeholder="100,00" {...field} />
                   </FormControl>
@@ -229,7 +247,14 @@ export default function AddTransactionForm({
                 </FormItem>
               )}
             />
-            <Button>Adicionar</Button>
+            <div className="flex gap-4 justify-end">
+              <Button variant="outline" name="add-another" value="true">
+                Salvar e adicionar outra
+              </Button>
+              <Button name="add-another" value="false">
+                Salvar
+              </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>
