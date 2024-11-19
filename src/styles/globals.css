@@ -86,3 +86,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+body[data-scroll-locked] {
+  source: 'globals.css';
+  reason: 'Remover padding do body quando houver um dialog aberto. Causava um flick ao abrir/fechar o dialog';
+  padding-left: 1rem !important;
+  padding-top: 1rem !important;
+  padding-right: 1rem !important;
+}
